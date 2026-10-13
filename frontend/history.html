@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>History | IoT PTIT</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <input class="nav-toggle" id="nav-toggle" type="checkbox" />
+  <label class="backdrop" for="nav-toggle"></label>
+  <div class="app">
+    <aside class="sidebar">
+      <p class="logo">IoT PTIT</p>
+      <div class="sidebar-divider"></div>
+      <nav class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="data_sensors.html">Data sensor</a>
+        <a class="is-active" href="history.html">History</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="mobile-bar">
+        <label class="menu-btn" for="nav-toggle"><span></span></label>
+        <h1 class="page-title">History</h1>
+      </div>
+      <h1 class="page-title desktop-only">History</h1>
+
+      <!-- Toolbar: ô tìm kiếm thời gian + 3 dropdown lọc + sort + page size -->
+      <div class="toolbar-unified toolbar-history-new">
+        <!-- Ô tìm kiếm theo thời gian (mặc định) -->
+        <input class="field field-search" id="hist-filter-input" type="text"
+          placeholder="Tìm theo thời gian (dd/mm/yyyy hh:mm)…" />
+        <!-- Dropdown: lọc tên thiết bị -->
+        <div class="select-wrap select-wrap-sm" title="Lọc theo tên thiết bị">
+          <select id="hist-filter-device">
+            <option value="">Tên thiết bị</option>
+            <option value="LED 1">LED 1</option>
+            <option value="LED 2">LED 2</option>
+          </select>
+          <img src="assets/chevron-down.svg" alt="" width="13" height="8" />
+        </div>
+        <!-- Dropdown: lọc hành động -->
+        <div class="select-wrap select-wrap-sm" title="Lọc theo hành động">
+          <select id="hist-filter-action">
+            <option value="">Hành động</option>
+            <option value="ON">ON</option>
+            <option value="OFF">OFF</option>
+          </select>
+          <img src="assets/chevron-down.svg" alt="" width="13" height="8" />
+        </div>
+        <!-- Dropdown: lọc trạng thái -->
+        <div class="select-wrap select-wrap-sm" title="Lọc theo trạng thái">
+          <select id="hist-filter-status">
+            <option value="">Trạng thái</option>
+            <option value="ON">ON</option>
+            <option value="OFF">OFF</option>
+            <option value="WAITING">WAITING</option>
+            <option value="FAILED">FAILED</option>
+          </select>
+          <img src="assets/chevron-down.svg" alt="" width="13" height="8" />
+        </div>
+        <!-- Sort -->
+        <div class="sort-wrap sort-wrap-sm">
+          <input class="sort-toggle" id="sort-toggle" type="checkbox" />
+          <label class="sort-btn" for="sort-toggle">
+            Thời gian
+            <img src="assets/sort-triangle.svg" alt="" width="10" height="10" />
+          </label>
+        </div>
+        <!-- Page size -->
+        <div class="select-wrap select-wrap-sm">
+          <select id="page-size-select">
+            <option value="10">10 / trang</option>
+            <option value="20">20 / trang</option>
+            <option value="50">50 / trang</option>
+            <option value="100">100 / trang</option>
+          </select>
+          <img src="assets/chevron-down.svg" alt="" width="13" height="8" />
+        </div>
+      </div>
+
+      <!-- Bảng dữ liệu (scroll dọc khi cần) -->
+      <div class="table-wrap table-scroll">
+        <table class="data-table history-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tên thiết bị</th>
+              <th>Hành động</th>
+              <th>Trạng thái</th>
+              <th>Người dùng</th>
+              <th>Thời gian</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dữ liệu được nạp tự động bởi history.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer: entries info + pagination -->
+      <div class="table-footer">
+        <p class="entries-info" id="entries-info"></p>
+        <nav class="pagination" aria-label="Phân trang"></nav>
+      </div>
+    </main>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/history.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | IoT PTIT</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="Dashboard giám sát IoT: nhiệt độ, độ ẩm, ánh sáng và điều khiển LED" />
+</head>
+
+<body>
+  <input class="nav-toggle" id="nav-toggle" type="checkbox" />
+  <label class="backdrop" for="nav-toggle"></label>
+  <div class="app">
+    <aside class="sidebar">
+      <p class="logo">IoT PTIT</p>
+      <div class="sidebar-divider"></div>
+      <nav class="nav">
+        <a class="is-active" href="dashboard.html">Dashboard</a>
+        <a href="data_sensors.html">Data sensor</a>
+        <a href="history.html">History</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="mobile-bar">
+        <label class="menu-btn" for="nav-toggle"><span></span></label>
+        <h1 class="page-title">Dashboard</h1>
+      </div>
+      <h1 class="page-title desktop-only">Dashboard</h1>
+
+      <!-- Stat cards -->
+      <section class="stat-grid">
+        <article class="card stat-card stat-temp">
+          <p class="stat-label">Nhiệt độ</p>
+          <p class="stat-value" id="stat-val-temp">—</p>
+          <div class="stat-icon">
+            <img src="assets/icon-temp.png" alt="Nhiệt độ" width="70" height="70" />
+          </div>
+        </article>
+        <article class="card stat-card stat-humidity">
+          <p class="stat-label">Độ ẩm</p>
+          <p class="stat-value" id="stat-val-humidity">—</p>
+          <div class="stat-icon">
+            <img src="assets/icon-humidity.png" alt="Độ ẩm" width="70" height="70" />
+          </div>
+        </article>
+        <article class="card stat-card stat-light">
+          <p class="stat-label">Ánh sáng</p>
+          <p class="stat-value" id="stat-val-light">—</p>
+          <div class="stat-icon">
+            <img src="assets/icon-light.png" alt="Ánh sáng" width="70" height="70" />
+          </div>
+        </article>
+      </section>
+
+      <!-- Bottom: Chart + Control -->
+      <section class="dashboard-bottom">
+        <article class="card chart-card">
+          <h2 class="chart-title">Biểu đồ 15 giá trị gần nhất</h2>
+          <div class="chart-legend">
+            <div class="legend-item"><span class="dot dot-temp"></span> Nhiệt độ</div>
+            <div class="legend-item"><span class="dot dot-humidity"></span> Độ ẩm</div>
+            <div class="legend-item"><span class="dot dot-light"></span> Ánh sáng</div>
+          </div>
+          <div class="chart-canvas-wrap">
+            <canvas id="sensor-chart"></canvas>
+          </div>
+        </article>
+        <article class="card control-card">
+          <h2 class="control-title">Điều khiển thiết bị</h2>
+          <div class="control-list">
+            <!-- LED 1 -->
+            <div class="device-row">
+              <!-- Icon đèn + tên: nằm ngang bên trái -->
+              <div class="device-lamp-wrap">
+                <img class="lamp-icon" id="lamp-icon-1" src="assets/light-off.png" alt="LED 1" />
+                <span class="device-label">LED 1</span>
+              </div>
+              <!-- Spinner + msg + toggle: bên phải -->
+              <div class="device-controls">
+                <span class="device-spinner" id="device-spinner-1" style="display:none"></span>
+                <span class="device-msg" id="device-msg-1" style="display:none"></span>
+                <label class="switch">
+                  <input type="checkbox" id="led1-toggle" />
+                  <span class="switch-ui"></span>
+                </label>
+              </div>
+            </div>
+            <!-- LED 2 -->
+            <div class="device-row">
+              <div class="device-lamp-wrap"> <!-- icon + tên nằm ngang -->
+                <img class="lamp-icon" id="lamp-icon-2" src="assets/light-off.png" alt="LED 2" />
+                <span class="device-label">LED 2</span>
+              </div>
+              <div class="device-controls">
+                <span class="device-spinner" id="device-spinner-2" style="display:none"></span>
+                <span class="device-msg" id="device-msg-2" style="display:none"></span>
+                <label class="switch">
+                  <input type="checkbox" id="led2-toggle" />
+                  <span class="switch-ui"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Banner mất kết nối -->
+  <div id="connection-banner" class="connection-banner" style="display:none">
+    ⚠ Mất kết nối tới server
+  </div>
+
+  <!-- Scripts: Chart.js + app JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/device-control.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+
+</html>

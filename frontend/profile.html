@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | IoT PTIT</title>
+  <meta name="description" content="Thông tin sinh viên thực hiện dự án IoT Dashboard" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <input class="nav-toggle" id="nav-toggle" type="checkbox" />
+  <label class="backdrop" for="nav-toggle"></label>
+  <div class="app">
+    <aside class="sidebar">
+      <p class="logo">IoT PTIT</p>
+      <div class="sidebar-divider"></div>
+      <nav class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="data_sensors.html">Data sensor</a>
+        <a href="history.html">History</a>
+        <a class="is-active" href="profile.html">Profile</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="mobile-bar">
+        <label class="menu-btn" for="nav-toggle"><span></span></label>
+        <h1 class="page-title">Profile</h1>
+      </div>
+      <h1 class="page-title desktop-only">Profile</h1>
+      <div class="profile-wrap">
+        <section class="profile-card">
+          <div class="avatar">
+            <img src="assets/avatar.png" alt="Avatar" width="160" height="160" />
+          </div>
+          <h2 class="profile-name" id="profile-name">Đang tải...</h2>
+          <div class="profile-rows">
+            <div class="profile-row">
+              <span>Mã sinh viên:</span>
+              <span id="profile-student-code">—</span>
+            </div>
+            <div class="profile-row">
+              <span>Lớp:</span>
+              <span id="profile-class">—</span>
+            </div>
+            <div class="profile-row">
+              <span>GitHub:</span>
+              <a id="profile-link-github" href="#">Xem tại đây</a>
+            </div>
+            <div class="profile-row">
+              <span>Figma:</span>
+              <a id="profile-link-figma" href="#">Xem tại đây</a>
+            </div>
+            <div class="profile-row">
+              <span>Postman:</span>
+              <a id="profile-link-postman" href="#">Xem tại đây</a>
+            </div>
+            <div class="profile-row">
+              <span>Báo cáo:</span>
+              <a id="profile-link-report" href="#">Xem tại đây</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+
+</html>

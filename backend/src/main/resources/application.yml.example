@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    url: 
+    username: 
+    password:   
+    driver-class-name: 
+
+  jpa:
+    open-in-view: false  
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
+server:
+  port: 8080
+
+mqtt:
+  broker-url: 
+  client-id: iot-backend-${random.uuid}
+  username: 
+  password:
+  topics:
+    sensor-data: data/sensors
+    device-control: device/control
+    device-status: device/status
+
+device:
+  control:
+    timeout-seconds: 10   # Thời gian tối đa chờ phản hồi từ ESP32 (giây)
+
+logging:
+  level:
+    com.example.iotdashboard: DEBUG
+    org.eclipse.paho: WARN

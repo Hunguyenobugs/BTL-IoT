@@ -1,0 +1,203 @@
+# ============================================================
+# .gitignore cho dự án IoT Dashboard
+# Stack: Spring Boot (Maven) + MySQL + MQTT | HTML/CSS/JS | Arduino ESP32
+# ============================================================
+
+
+# ════════════════════════════════════════════════════════════
+# 🔐 BẢO MẬT - QUAN TRỌNG NHẤT
+# ════════════════════════════════════════════════════════════
+
+# File cấu hình chứa thông tin nhạy cảm (DB password, MQTT password...)
+# → Dùng application.yml.example (không có password) để commit thay thế
+backend/src/main/resources/application.yml
+backend/src/main/resources/application-*.yml
+backend/src/main/resources/application.properties
+backend/src/main/resources/application-*.properties
+
+# File biến môi trường
+.env
+.env.*
+!.env.example
+
+# File cấu hình bảo mật khác
+*.secret
+secrets/
+credentials/
+
+# Firmware: file cấu hình riêng chứa WiFi/MQTT credentials
+# → Tạo firmware/secrets.h (gitignored), commit firmware/secrets.h.example
+firmware/secrets.h
+firmware/config_local.h
+
+
+# ════════════════════════════════════════════════════════════
+# ☕ JAVA / SPRING BOOT / MAVEN
+# ════════════════════════════════════════════════════════════
+
+# Thư mục build của Maven (JAR, class files, report...)
+target/
+backend/target/
+
+# File class Java đã biên dịch
+*.class
+
+# JAR / WAR / EAR
+*.jar
+*.war
+*.ear
+*.nar
+
+# Log của Maven Wrapper
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Maven local repository cache (nếu lưu trong project)
+.m2/
+
+
+# ════════════════════════════════════════════════════════════
+# 🌐 FRONTEND (HTML/CSS/JS)
+# ════════════════════════════════════════════════════════════
+
+# Node.js (nếu dùng npm tools như prettier, eslint...)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Build output frontend (nếu dùng bundler sau này)
+dist/
+build/
+.cache/
+
+
+# ════════════════════════════════════════════════════════════
+# 🔌 FIRMWARE ARDUINO / ESP32
+# ════════════════════════════════════════════════════════════
+
+# Thư mục build của Arduino IDE
+firmware/.build/
+firmware/build/
+
+# Cache Arduino IDE
+firmware/.arduino15/
+
+# File object và binary đã biên dịch
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+
+
+# ════════════════════════════════════════════════════════════
+# 🖥️ IDE VÀ EDITOR
+# ════════════════════════════════════════════════════════════
+
+# IntelliJ IDEA / Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# NetBeans
+nbproject/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# STS (Spring Tool Suite)
+.apt_generated
+.factorypath
+
+
+# ════════════════════════════════════════════════════════════
+# 💻 HỆ ĐIỀU HÀNH
+# ════════════════════════════════════════════════════════════
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+
+
+# ════════════════════════════════════════════════════════════
+# 📋 LOG VÀ TẠM THỜI
+# ════════════════════════════════════════════════════════════
+
+# Log files
+*.log
+logs/
+log/
+
+# File tạm thời
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# File backup
+*.bak
+*.orig
+
+
+# ════════════════════════════════════════════════════════════
+# 🗄️ DATABASE
+# ════════════════════════════════════════════════════════════
+
+# File dump database (có thể chứa dữ liệu nhạy cảm)
+*.sql.gz
+*.dump
+*.bak.sql
+
+# SQLite (nếu dùng local testing)
+*.sqlite
+*.sqlite3
+*.db
+
+
+# ════════════════════════════════════════════════════════════
+# 📦 KHÁC
+# ════════════════════════════════════════════════════════════
+
+# File nén
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Certificate / Key (KHÔNG bao giờ commit!)
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.jks
+*.keystore

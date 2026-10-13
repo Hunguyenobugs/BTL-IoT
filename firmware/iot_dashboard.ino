@@ -1,0 +1,290 @@
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include <DHT.h>
+#include <ArduinoJson.h>
+
+// ─── CẤU HÌNH WIFI ──────────────────────────────────────────────────────────
+const char* WIFI_SSID     = "LAPTOP-QSELFC71 1279";       // TODO: đổi thành SSID thực tế
+const char* WIFI_PASSWORD = "7y|2737U";   // TODO: đổi thành mật khẩu thực tế
+
+// ─── CẤU HÌNH MQTT BROKER ───────────────────────────────────────────────────
+const char* MQTT_BROKER    = "192.168.137.1";  // TODO: đổi thành IP máy chạy backend/broker
+const int   MQTT_PORT      = 1885;
+const char* MQTT_USER      = "mqttuser";      // TODO: đổi thành username MQTT
+const char* MQTT_PASSWORD  = "hung123";       // TODO: đổi thành password MQTT
+
+// Client ID duy nhất dựa trên MAC address (tránh conflict với client khác)
+char MQTT_CLIENT_ID[32];   // sẽ điền trong setup()
+
+// ─── MQTT TOPICS (KHÔNG THAY ĐỔI) ───────────────────────────────────────────
+const char* TOPIC_SENSOR_DATA    = "data/sensors";
+const char* TOPIC_DEVICE_CONTROL = "device/control";
+const char* TOPIC_DEVICE_STATUS  = "device/status";
+
+// ─── CẤU HÌNH CHÂN GPIO ─────────────────────────────────────────────────────
+// TODO: Điều chỉnh số chân theo sơ đồ mạch thực tế
+#define DHT_PIN         4       // Chân DATA của DHT11
+#define DHT_TYPE        DHT11   // Loại cảm biến
+
+#define LIGHT_SENSOR_PIN 34     // Chân ADC đọc quang trở/photodiode (ADC1 channel)
+
+#define LED1_PIN        18      // LED 1 cắm chân D18
+#define LED2_PIN        19      // LED 2 cắm chân D19
+
+// ─── HẰNG SỐ ────────────────────────────────────────────────────────────────
+const long PUBLISH_INTERVAL_MS = 2000;   // Publish dữ liệu mỗi 2 giây
+const int  ADC_MAX             = 4095;   // ESP32 ADC 12-bit
+
+// ─── BIẾN TRẠNG THÁI ────────────────────────────────────────────────────────
+bool led1State = false;
+bool led2State = false;
+unsigned long lastPublishTime = 0;
+
+// ─── KHỞI TẠO ĐỐI TƯỢNG ────────────────────────────────────────────────────
+DHT dht(DHT_PIN, DHT_TYPE);
+WiFiClient wifiClient;
+PubSubClient mqttClient(wifiClient);
+
+// ─── FORWARD DECLARATIONS ───────────────────────────────────────────────────
+void connectWiFi();
+void connectMQTT();
+void publishSensorData();
+void publishDeviceStatus(int deviceId, const char* deviceKey, bool isOn);
+void onMqttMessage(char* topic, byte* payload, unsigned int length);
+float readLightLux();
+
+// ============================================================
+// SETUP
+// ============================================================
+void setup() {
+  Serial.begin(115200);
+  Serial.println("\n[ESP32] IoT Dashboard Firmware Starting...");
+
+  // Tạo client ID duy nhất từ MAC address (6 bytes cuối)
+  uint8_t mac[6];
+  WiFi.macAddress(mac);
+  snprintf(MQTT_CLIENT_ID, sizeof(MQTT_CLIENT_ID),
+           "esp32-%02X%02X%02X", mac[3], mac[4], mac[5]);
+  Serial.printf("[MQTT] Client ID: %s\n", MQTT_CLIENT_ID);
+
+  // Khởi tạo chân GPIO
+  pinMode(LED1_PIN, OUTPUT);
+  pinMode(LED2_PIN, OUTPUT);
+  digitalWrite(LED1_PIN, LOW);
+  digitalWrite(LED2_PIN, LOW);
+
+  // Khởi tạo cảm biến DHT
+  dht.begin();
+
+  // Kết nối WiFi
+  connectWiFi();
+
+  // Cấu hình MQTT
+  mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
+  mqttClient.setCallback(onMqttMessage);
+  mqttClient.setBufferSize(512);  // Tăng buffer nếu payload lớn
+
+  // Kết nối MQTT
+  connectMQTT();
+
+  Serial.println("[ESP32] Setup complete.");
+}
+
+// ============================================================
+// LOOP
+// ============================================================
+void loop() {
+  // Đảm bảo WiFi vẫn kết nối
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[WiFi] Disconnected. Reconnecting...");
+    connectWiFi();
+  }
+
+  // Đảm bảo MQTT vẫn kết nối
+  if (!mqttClient.connected()) {
+    connectMQTT();
+  }
+  mqttClient.loop();
+
+  // Publish dữ liệu cảm biến định kỳ
+  unsigned long now = millis();
+  if (now - lastPublishTime >= PUBLISH_INTERVAL_MS) {
+    lastPublishTime = now;
+    publishSensorData();
+  }
+}
+
+// ============================================================
+// KẾT NỐI WIFI
+// ============================================================
+void connectWiFi() {
+  Serial.printf("[WiFi] Connecting to %s", WIFI_SSID);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+  int attempt = 0;
+  while (WiFi.status() != WL_CONNECTED && attempt < 30) {
+    delay(500);
+    Serial.print(".");
+    attempt++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.printf("\n[WiFi] Connected. IP: %s\n", WiFi.localIP().toString().c_str());
+  } else {
+    Serial.println("\n[WiFi] Failed to connect. Will retry in loop.");
+  }
+}
+
+// ============================================================
+// KẾT NỐI MQTT
+// ============================================================
+void connectMQTT() {
+  int attempt = 0;
+  while (!mqttClient.connected() && attempt < 5) {
+    Serial.printf("[MQTT] Connecting to %s:%d ...\n", MQTT_BROKER, MQTT_PORT);
+    if (mqttClient.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASSWORD)) {
+      Serial.println("[MQTT] Connected!");
+      // Subscribe với QoS 1 để không mất lệnh khi vừa reconnect
+      mqttClient.subscribe(TOPIC_DEVICE_CONTROL, 1);
+      Serial.printf("[MQTT] Subscribed to %s (QoS 1)\n", TOPIC_DEVICE_CONTROL);
+    } else {
+      Serial.printf("[MQTT] Failed (rc=%d). Retry in 3s...\n", mqttClient.state());
+      delay(3000);
+      attempt++;
+    }
+  }
+}
+
+// ============================================================
+// PUBLISH DỮ LIỆU CẢM BIẾN
+// ============================================================
+void publishSensorData() {
+  float temperature = dht.readTemperature();
+  float humidity    = dht.readHumidity();
+  float light       = readLightLux();
+
+  // Kiểm tra lỗi DHT
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("[DHT] Read error! Check sensor wiring.");
+    return;
+  }
+
+  // Tạo JSON payload (không gửi timestamp, server tự lấy thời gian thực)
+  StaticJsonDocument<256> doc;
+  doc["temperature"] = round(temperature * 10) / 10.0;
+  doc["humidity"]    = round(humidity);
+  doc["light"]       = (int)light;
+
+  char payload[256];
+  serializeJson(doc, payload);
+
+  bool ok = mqttClient.publish(TOPIC_SENSOR_DATA, payload);
+  if (ok) {
+    Serial.printf("[MQTT] Published sensors: %s\n", payload);
+  } else {
+    Serial.println("[MQTT] Publish failed!");
+  }
+}
+
+// ============================================================
+// ĐỌC CẢM BIẾN ÁNH SÁNG
+// ============================================================
+float readLightLux() {
+  // Lấy trung bình 5 lần đọc để giảm nhiễu ADC
+  long sum = 0;
+  for (int i = 0; i < 5; i++) {
+    sum += analogRead(LIGHT_SENSOR_PIN);
+    delay(2);
+  }
+  int raw = sum / 5;
+
+  // Quang trở (LDR): điện trở TĂNG khi TỐI → điện áp trên LDR THẤP → ADC THẤP
+  // → Cần ĐẢO: raw thấp = tối = lux thấp
+  // Công thức đảo: lux = (1 - raw/ADC_MAX) * MAX_LUX
+  // Tuy nhiên thực tế mạch chia áp có thể là:
+  //   VCC → R_cố_định → GPIO → LDR → GND   (ADC tăng khi sáng: KHÔNG đảo)
+  //   VCC → LDR → GPIO → R_cố_định → GND   (ADC giảm khi sáng: CẦN đảo)
+  // Vì bạn nói "càng tối thì lux càng cao" → mạch đang là loại 2 → ĐẢNG công thức:
+  float lux = (float)(ADC_MAX - raw) / ADC_MAX * 1000.0f;
+  if (lux < 0)    lux = 0;
+  if (lux > 1000) lux = 1000;
+  return lux;
+}
+
+
+// ============================================================
+// XỬ LÝ LỆNH ĐIỀU KHIỂN TỪ BROKER
+// ============================================================
+void onMqttMessage(char* topic, byte* payload, unsigned int length) {
+  // Chuyển payload thành chuỗi
+  char msg[512];
+  if (length >= sizeof(msg)) length = sizeof(msg) - 1;
+  memcpy(msg, payload, length);
+  msg[length] = '\0';
+
+  Serial.printf("[MQTT] Message on [%s]: %s\n", topic, msg);
+
+  if (strcmp(topic, TOPIC_DEVICE_CONTROL) == 0) {
+    StaticJsonDocument<256> doc;
+    DeserializationError err = deserializeJson(doc, msg);
+    if (err) {
+      Serial.printf("[JSON] Parse error: %s\n", err.c_str());
+      return;
+    }
+
+    long   deviceId  = doc["deviceId"].as<long>();
+    const char* action = doc["action"].as<const char*>();
+
+    if (!action) return;
+
+    bool turnOn = (strcmp(action, "ON") == 0);
+
+    // Thực hiện digitalWrite theo deviceId
+    if (deviceId == 1) {
+      led1State = turnOn;
+      digitalWrite(LED1_PIN, turnOn ? HIGH : LOW);
+      Serial.printf("[LED1] Set to %s\n", turnOn ? "ON" : "OFF");
+
+      // Thêm delay nhỏ mô phỏng độ trễ thực tế
+      delay(50);
+
+      // Đọc lại trạng thái thực tế từ chân GPIO
+      bool actual = (digitalRead(LED1_PIN) == HIGH);
+      publishDeviceStatus(1, "led1", actual);
+
+    } else if (deviceId == 2) {
+      led2State = turnOn;
+      digitalWrite(LED2_PIN, turnOn ? HIGH : LOW);
+      Serial.printf("[LED2] Set to %s\n", turnOn ? "ON" : "OFF");
+
+      delay(50);
+
+      bool actual = (digitalRead(LED2_PIN) == HIGH);
+      publishDeviceStatus(2, "led2", actual);
+
+    } else {
+      Serial.printf("[CTRL] Unknown deviceId: %ld\n", deviceId);
+    }
+  }
+}
+
+// ============================================================
+// PUBLISH TRẠNG THÁI THỰC TẾ CỦA LED
+// ============================================================
+void publishDeviceStatus(int deviceId, const char* deviceKey, bool isOn) {
+  StaticJsonDocument<128> doc;
+  doc["deviceId"] = deviceId;
+  doc["device"]   = deviceKey;
+  doc["status"]   = isOn ? "ON" : "OFF";
+
+  char payload[128];
+  serializeJson(doc, payload);
+
+  // Log xác nhận GPIO thực tế (debug phần cứng)
+  int pin = (deviceId == 1) ? LED1_PIN : LED2_PIN;
+  Serial.printf("[GPIO] Pin %d = %d (expected %d)\n", pin, digitalRead(pin), isOn ? HIGH : LOW);
+
+  bool ok = mqttClient.publish(TOPIC_DEVICE_STATUS, payload);
+  Serial.printf("[MQTT] Status published: %s (ok=%d)\n", payload, ok);
+}

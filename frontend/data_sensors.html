@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data sensor | IoT PTIT</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <input class="nav-toggle" id="nav-toggle" type="checkbox" />
+  <label class="backdrop" for="nav-toggle"></label>
+  <div class="app">
+    <aside class="sidebar">
+      <p class="logo">IoT PTIT</p>
+      <div class="sidebar-divider"></div>
+      <nav class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a class="is-active" href="data_sensors.html">Data sensor</a>
+        <a href="history.html">History</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="mobile-bar">
+        <label class="menu-btn" for="nav-toggle"><span></span></label>
+        <h1 class="page-title">Data sensor</h1>
+      </div>
+      <h1 class="page-title desktop-only">Data sensor</h1>
+
+      <!-- Toolbar: dropdown loại tìm kiếm + ô search + sort + page size -->
+      <div class="toolbar-unified">
+        <div class="select-wrap select-wrap-sm">
+          <select id="filter-search-type">
+            <option value="all">Tất cả</option>
+            <!-- <option value="iden">ID</option> -->
+            <option value="light">Ánh sáng</option>
+            <option value="temperature">Nhiệt độ</option>
+            <option value="humidity">Độ ẩm</option>
+            <option value="time">Thời gian</option>
+          </select>
+          <img src="assets/chevron-down.svg" alt="" width="13" height="8" />
+        </div>
+        <input class="field field-search" id="filter-search" type="text" placeholder="Tìm kiếm…" />
+        <div class="sort-wrap sort-wrap-sm">
+          <input class="sort-toggle" id="sort-toggle" type="checkbox" />
+          <label class="sort-btn" for="sort-toggle">
+            Thời gian
+            <img src="assets/sort-triangle.svg" alt="" width="10" height="10" />
+          </label>
+        </div>
+        <div class="select-wrap select-wrap-sm">
+          <select id="page-size-select">
+            <option value="10">10 / trang</option>
+            <option value="20">20 / trang</option>
+            <option value="50">50 / trang</option>
+            <option value="100">100 / trang</option>
+          </select>
+          <img src="assets/chevron-down.svg" alt="" width="13" height="8" />
+        </div>
+      </div>
+
+      <!-- Bảng dữ liệu (scroll dọc khi cần) -->
+      <div class="table-wrap table-scroll">
+        <table class="data-table sensor-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Loại cảm biến</th>
+              <th>Giá trị</th>
+              <th>Thời gian</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dữ liệu được nạp tự động bởi data-sensor.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer: entries info + pagination -->
+      <div class="table-footer">
+        <p class="entries-info" id="entries-info"></p>
+        <nav class="pagination" aria-label="Phân trang"></nav>
+      </div>
+    </main>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/data-sensor.js"></script>
+</body>
+
+</html>
