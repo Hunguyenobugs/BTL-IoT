@@ -27,7 +27,7 @@ credentials/
 
 # Firmware: file cấu hình riêng chứa WiFi/MQTT credentials
 # → Tạo firmware/secrets.h (gitignored), commit firmware/secrets.h.example
-firmware/secrets.h
+firmware/iot_dashboard.ino
 firmware/config_local.h
 
 
