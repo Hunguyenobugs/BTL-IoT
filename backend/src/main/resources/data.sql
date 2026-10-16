@@ -21,9 +21,9 @@ VALUES (
     'Nguyễn Chí Hùng',
     'D23CNPM04',
     'https://www.figma.com/design/MbnXNmzyCE9dDX82c0gB7A/IoT?node-id=2-2',
-    'https://www.postman.com',
-    'https://github.com',
-    'https://drive.google.com'
+    'https://documenter.getpostman.com/view/57902168/2sBYAvupfr?utm_source=postman-web-app#fb96ecb9-0b9d-4693-8d28-ce2af2a8dcf0',
+    'https://github.com/Hunguyenobugs/BTL-IoT',
+    'https://drive.google.com/file/d/1er5xbBGQEGRrCE3pjmINtnPvuimgubSL/view?usp=sharing'
 )
 ON DUPLICATE KEY UPDATE
     student_code = VALUES(student_code),

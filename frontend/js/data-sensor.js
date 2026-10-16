@@ -5,12 +5,12 @@
 
 // ─── TRẠNG THÁI ──────────────────────────────────────────────────────────────
 let currentPage = 1;
-let PAGE_SIZE   = 10;   // có thể thay đổi qua dropdown
+let PAGE_SIZE = 10;   // có thể thay đổi qua dropdown
 let currentFilters = {
-  type:  '',
-  time:  '',
+  type: '',
+  time: '',
   value: '',
-  sort:  'desc',
+  sort: 'desc',
 };
 
 // Chế độ tìm kiếm: 'all' | 'sensor' | 'value' | 'time'
@@ -28,7 +28,7 @@ let lastItemsKey = null;
 // ─── KHỞI TẠO ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   const searchTypeEl = document.getElementById('filter-search-type');
-  const searchInput  = document.getElementById('filter-search');
+  const searchInput = document.getElementById('filter-search');
   if (searchTypeEl) {
     searchType = searchTypeEl.value;
     if (['light', 'temperature', 'humidity'].includes(searchType)) {
@@ -55,9 +55,9 @@ function scheduleAutoRefresh() {
 
 // ─── GẮN SỰ KIỆN FILTER ──────────────────────────────────────────────────────
 function bindFilterEvents() {
-  const searchInput    = document.getElementById('filter-search');
-  const searchTypeEl   = document.getElementById('filter-search-type');
-  const sortToggle     = document.getElementById('sort-toggle');
+  const searchInput = document.getElementById('filter-search');
+  const searchTypeEl = document.getElementById('filter-search-type');
+  const sortToggle = document.getElementById('sort-toggle');
   const pageSizeSelect = document.getElementById('page-size-select');
 
   // --- Dropdown: chọn loại tìm kiếm
@@ -65,8 +65,8 @@ function bindFilterEvents() {
     searchTypeEl.addEventListener('change', () => {
       searchType = searchTypeEl.value;
       // Reset tất cả filter khi đổi loại
-      currentFilters.type  = '';
-      currentFilters.time  = '';
+      currentFilters.type = '';
+      currentFilters.time = '';
       currentFilters.value = '';
       if (['light', 'temperature', 'humidity'].includes(searchType)) {
         currentFilters.type = searchType;
@@ -82,7 +82,7 @@ function bindFilterEvents() {
   // --- Ô tìm kiếm chính
   if (searchInput) {
     searchInput.addEventListener('focus', () => { isUserTyping = true; });
-    searchInput.addEventListener('blur',  () => { isUserTyping = false; });
+    searchInput.addEventListener('blur', () => { isUserTyping = false; });
     searchInput.addEventListener('input', () => {
       clearTimeout(inputDebounce);
       inputDebounce = setTimeout(() => {
@@ -115,7 +115,7 @@ function bindFilterEvents() {
  */
 function applySearchFilter(val) {
   // Reset trước
-  currentFilters.time  = '';
+  currentFilters.time = '';
   currentFilters.value = '';
 
   if (['light', 'temperature', 'humidity'].includes(searchType)) {
@@ -146,11 +146,11 @@ function applySearchFilter(val) {
 
 function getSearchPlaceholder(type) {
   switch (type) {
-    case 'light':       return 'Nhập giá trị ánh sáng…';
+    case 'light': return 'Nhập giá trị ánh sáng…';
     case 'temperature': return 'Nhập giá trị nhiệt độ…';
-    case 'humidity':    return 'Nhập giá trị độ ẩm…';
-    case 'time':        return 'Nhập thời gian (dd/mm/yyyy hh:mm)…';
-    default:            return 'Nhập giá trị tìm kiếm…';
+    case 'humidity': return 'Nhập giá trị độ ẩm…';
+    case 'time': return 'Nhập thời gian (yyyy/MM/dd hh:mm:ss)…';
+    default: return 'Nhập giá trị tìm kiếm…';
   }
 }
 
@@ -164,7 +164,7 @@ async function loadPage(page) {
   };
   if (currentFilters.type && currentFilters.type !== 'all') params.type = currentFilters.type;
   if (currentFilters.value) params.value = currentFilters.value;
-  if (currentFilters.time)  params.time  = convertTimeInput(currentFilters.time);
+  if (currentFilters.time) params.time = convertTimeInput(currentFilters.time);
 
   try {
     const data = await fetchSensorList(params);
@@ -217,7 +217,7 @@ function renderEntriesInfo(currentPage, totalPages, pageItemCount, totalItems) {
   if (!el) return;
   if (!totalItems) { el.textContent = ''; return; }
   const from = (currentPage - 1) * PAGE_SIZE + 1;
-  const to   = from + pageItemCount - 1;
+  const to = from + pageItemCount - 1;
   el.textContent = `Hiển thị ${from} đến ${to} trong ${totalItems} mục`;
 }
 
