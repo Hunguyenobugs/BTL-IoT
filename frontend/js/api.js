@@ -8,23 +8,80 @@
 const BASE_URL = 'http://localhost:8080/api';
 
 /**
- * Hàm fetch chung. Tự động parse JSON, ném Error nếu success=false.
+ * Hàm fetch chung. Tự động parse JSON, đính kèm JWT token nếu có, ném Error nếu success=false.
  * @param {string} endpoint  Đường dẫn relative (vd: '/sensors/latest')
  * @param {object} [options] fetch options (method, body, headers...)
  * @returns {Promise<any>}   Trả về phần `data` trong response
  */
 async function apiFetch(endpoint, options = {}) {
   const url = BASE_URL + endpoint;
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
   const defaultOptions = {
-    headers: { 'Content-Type': 'application/json' },
     ...options,
+    headers,
   };
   const res = await fetch(url, defaultOptions);
-  const json = await res.json();
+  
+  let json;
+  try {
+    json = await res.json();
+  } catch (err) {
+    throw new Error('Không thể phân tích phản hồi từ server');
+  }
+
+  if (res.status === 401) {
+    // Token hết hạn hoặc không hợp lệ
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.dispatchEvent(new CustomEvent('auth:state-change'));
+    if (!window.location.pathname.endsWith('login.html')) {
+      window.location.href = 'login.html';
+    }
+    throw new Error(json.message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+  }
+
   if (!json.success) {
     throw new Error(json.message || 'API error');
   }
   return json.data;
+}
+
+// ─── AUTH APIs ───────────────────────────────────────────────────────────────
+
+/** POST /api/auth/login */
+function apiLogin(username, password) {
+  return apiFetch('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  });
+}
+
+/** POST /api/auth/register */
+function apiRegister(data) {
+  return apiFetch('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+/** POST /api/auth/change-password */
+function apiChangePassword(oldPassword, newPassword) {
+  return apiFetch('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ oldPassword, newPassword }),
+  });
+}
+
+/** GET /api/auth/me */
+function apiGetMe() {
+  return apiFetch('/auth/me');
 }
 
 // ─── SENSOR APIs ─────────────────────────────────────────────────────────────

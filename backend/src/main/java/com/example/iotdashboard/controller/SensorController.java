@@ -1,12 +1,9 @@
 package com.example.iotdashboard.controller;
 
 import com.example.iotdashboard.dto.*;
-import com.example.iotdashboard.repository.SensorRepository;
 import com.example.iotdashboard.service.SensorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/sensors")
@@ -14,7 +11,6 @@ import java.util.List;
 public class SensorController {
 
     private final SensorService sensorService;
-    private final SensorRepository sensorRepository;
 
     /** GET /api/sensors/latest */
     @GetMapping("/latest")

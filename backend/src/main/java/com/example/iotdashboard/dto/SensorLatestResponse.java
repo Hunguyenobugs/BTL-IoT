@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /** Response cho GET /api/sensors/latest */
 @Data
 @NoArgsConstructor

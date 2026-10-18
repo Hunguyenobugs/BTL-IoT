@@ -55,9 +55,16 @@ public class DeviceService {
         }
 
         // 1. Insert History với status WAITING
-        // Lấy user đầu tiên trong hệ thống (hệ thống 1 user)
-        User user = userRepository.findAll().stream().findFirst()
-                .orElseThrow(() -> new IllegalStateException("No user found in database"));
+        // Lấy user đang đăng nhập nếu có, hoặc fallback về user đầu tiên
+        User user = null;
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            user = userRepository.findByUsername(auth.getName()).orElse(null);
+        }
+        if (user == null) {
+            user = userRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new IllegalStateException("No user found in database"));
+        }
 
         History history = new History();
         history.setUser(user);
@@ -119,10 +126,10 @@ public class DeviceService {
         // Tìm bản ghi WAITING mới nhất của device này
         historyRepository.findTopByDeviceIdAndStatusOrderByIdDesc(deviceId, "WAITING")
                 .ifPresentOrElse(h -> {
-                    h.setStatus(status);
+                    h.setStatus("SUCCESS");
                     h.setExecutedAt(LocalDateTime.now()); // ghi đè = thời điểm resolve
                     historyRepository.save(h);
-                    log.info("History {} resolved: WAITING → {}", h.getId(), status);
+                    log.info("History {} resolved: WAITING → SUCCESS", h.getId());
                 }, () -> log.warn("No WAITING history found for deviceId={}", deviceId));
 
         // Cập nhật current_status của device
@@ -149,14 +156,20 @@ public class DeviceService {
         Page<History> dbPage = historyRepository.findWithFilters(dn, ts, ac, st, sortParam, pageable);
 
         List<HistoryItem> items = dbPage.getContent().stream()
-                .map(h -> new HistoryItem(
-                        h.getId(),
-                        h.getDevice().getName(),
-                        h.getAction(),
-                        h.getStatus(),
-                        h.getUser() != null ? h.getUser().getName() : null,
-                        h.getExecutedAt().format(ISO_FMT)
-                ))
+                .map(h -> {
+                    String displayStatus = h.getStatus();
+                    if ("ON".equalsIgnoreCase(displayStatus) || "OFF".equalsIgnoreCase(displayStatus)) {
+                        displayStatus = "SUCCESS";
+                    }
+                    return new HistoryItem(
+                            h.getId(),
+                            h.getDevice().getName(),
+                            h.getAction(),
+                            displayStatus,
+                            h.getUser() != null ? h.getUser().getName() : null,
+                            h.getExecutedAt().format(ISO_FMT)
+                    );
+                })
                 .toList();
 
         return new PagedResponse<>(items, page, dbPage.getTotalPages(), dbPage.getTotalElements());

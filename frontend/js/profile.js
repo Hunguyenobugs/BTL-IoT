@@ -5,7 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const user = await apiFetch('/user');
+    const user = await apiGetMe();
     renderProfile(user);
   } catch (err) {
     console.error('Failed to load profile:', err.message);

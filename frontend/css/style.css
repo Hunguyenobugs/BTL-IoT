@@ -1,0 +1,545 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
+
+:root {
+    --font-family: "Roboto", sans-serif;
+    --color-bg: #f5f5f5;
+    --color-surface: #ffffff;
+    --color-text: #000000;
+    --color-text-muted: rgba(0, 0, 0, 0.6);
+    --color-brand: #1e3a8a;
+    --color-nav-active: rgba(0, 34, 255, 0.2);
+    --color-border: #b9b9b9;
+    --color-input-border: #8d8d8d;
+    --color-page-active-border: #e5e5e5;
+    --sidebar-width: 215px;
+    --filter-h: 40px;
+    --radius-card: 12px;
+    --radius-input: 12px;
+    --radius-table: 4px;
+    --radius-page: 8px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    font-family: var(--font-family);
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+.nav-toggle {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+    align-items: stretch;
+}
+
+/* ─── Sidebar ─────────────────────────────────────────────────────────── */
+.sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    background: var(--color-surface);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 25px 0 0;
+    border-right: 1px solid var(--color-bg);
+}
+
+.logo {
+    margin: 0 0 16px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-brand);
+    text-align: center;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: #000;
+    margin: 0 0 15px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 10px 8px;
+    font-size: 24px;
+    font-weight: 400;
+    text-align: center;
+}
+
+.nav a.is-active {
+    background: var(--color-nav-active);
+    font-weight: 700;
+}
+
+/* ─── Main layout ─────────────────────────────────────────────────────── */
+.main {
+    flex: 1;
+    min-width: 0;
+    height: 100vh;
+    overflow: hidden;
+    padding: 20px 32px 12px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-title {
+    margin: 0 0 20px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 35px;
+}
+
+.page-title.desktop-only {
+    margin-bottom: 16px;
+    flex-shrink: 0;
+}
+
+/* ─── Mobile menu button ──────────────────────────────────────────────── */
+.menu-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: var(--color-surface);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.menu-btn span,
+.menu-btn span::before,
+.menu-btn span::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--color-text);
+    position: relative;
+}
+
+.menu-btn span::before,
+.menu-btn span::after {
+    content: "";
+    position: absolute;
+    left: 0;
+}
+
+.menu-btn span::before {
+    top: -6px;
+}
+
+.menu-btn span::after {
+    top: 6px;
+}
+
+/* ─── Sidebar Auth (bottom-left user widget) ──────────────────────────── */
+.sidebar-auth {
+    margin-top: auto;
+    padding: 14px 10px 18px;
+    border-top: 1px solid #e0e0e0;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.sidebar-user-container {
+    position: relative;
+    width: 100%;
+}
+
+.sidebar-user-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8fafc;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.sidebar-user-trigger:hover,
+.sidebar-user-menu.is-open~.sidebar-user-trigger {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+}
+
+.sidebar-user-avatar-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #6366f1;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.sidebar-user-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+
+.sidebar-user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.sidebar-user-sub {
+    font-size: 11px;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+.sidebar-user-more {
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sidebar-user-menu {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(5px);
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.sidebar-user-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.btn-sidebar-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+}
+
+.btn-sidebar-menu-item:hover {
+    background: #f1f5f9;
+}
+
+.btn-sidebar-menu-item svg {
+    color: #64748b;
+}
+
+.btn-sidebar-menu-item.btn-logout {
+    color: #dc2626;
+}
+
+.btn-sidebar-menu-item.btn-logout svg {
+    color: #dc2626;
+}
+
+.btn-sidebar-menu-item.btn-logout:hover {
+    background: #fef2f2;
+}
+
+/* ─── Auth Modal ──────────────────────────────────────────────────────── */
+.auth-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.auth-modal-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.auth-modal-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 24px;
+    animation: authModalPop 0.2s ease-out;
+}
+
+@keyframes authModalPop {
+    from {
+        transform: scale(0.95);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.auth-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.auth-modal-close:hover {
+    color: #0f172a;
+    background: #f1f5f9;
+}
+
+.auth-modal-title {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.auth-modal-desc {
+    margin: 0 0 16px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.auth-form-group {
+    margin-bottom: 14px;
+}
+
+.auth-form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 5px;
+}
+
+.auth-form-group input {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-form-group input:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+}
+
+.auth-form-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: none;
+}
+
+.auth-form-success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: none;
+}
+
+.btn-auth-submit {
+    width: 100%;
+    height: 42px;
+    background: var(--color-brand);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-auth-submit:hover {
+    background: #172554;
+}
+
+.btn-auth-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .main {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 900px) {
+
+    body,
+    .app,
+    .main {
+        overflow: unset;
+        height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .menu-btn {
+        display: inline-flex;
+    }
+
+    .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 20;
+        transform: translateX(-100%);
+        transition: transform 0.2s ease;
+        box-shadow: 4px 0 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-toggle:checked~.app .sidebar {
+        transform: translateX(0);
+    }
+
+    .nav-toggle:checked~.backdrop {
+        display: block;
+    }
+
+    .backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.25);
+        z-index: 15;
+    }
+
+    .mobile-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .mobile-bar .page-title {
+        margin: 0;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-bar {
+        display: none;
+    }
+
+    .backdrop {
+        display: none !important;
+    }
+}

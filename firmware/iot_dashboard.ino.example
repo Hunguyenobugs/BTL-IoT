@@ -2,6 +2,7 @@
 #include <PubSubClient.h>
 #include <DHT.h>
 #include <ArduinoJson.h>
+#include <Preferences.h>
 
 // ─── CẤU HÌNH WIFI ──────────────────────────────────────────────────────────
 const char* WIFI_SSID     = 
@@ -44,6 +45,7 @@ unsigned long lastPublishTime = 0;
 DHT dht(DHT_PIN, DHT_TYPE);
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
+Preferences preferences;
 
 // ─── FORWARD DECLARATIONS ───────────────────────────────────────────────────
 void connectWiFi();
@@ -70,8 +72,16 @@ void setup() {
   // Khởi tạo chân GPIO
   pinMode(LED1_PIN, OUTPUT);
   pinMode(LED2_PIN, OUTPUT);
-  digitalWrite(LED1_PIN, LOW);
-  digitalWrite(LED2_PIN, LOW);
+
+  // Đọc trạng thái đèn đã lưu trong Flash NVS trước khi ngắt kết nối / mất điện
+  preferences.begin("led_state", false);
+  led1State = preferences.getBool("led1", false);
+  led2State = preferences.getBool("led2", false);
+
+  // Khôi phục ngay lập tức trạng thái đèn
+  digitalWrite(LED1_PIN, led1State ? HIGH : LOW);
+  digitalWrite(LED2_PIN, led2State ? HIGH : LOW);
+  Serial.printf("[RESTORE] LED1: %s, LED2: %s\n", led1State ? "ON" : "OFF", led2State ? "ON" : "OFF");
 
   // Khởi tạo cảm biến DHT
   dht.begin();
@@ -148,6 +158,10 @@ void connectMQTT() {
       // Subscribe với QoS 1 để không mất lệnh khi vừa reconnect
       mqttClient.subscribe(TOPIC_DEVICE_CONTROL, 1);
       Serial.printf("[MQTT] Subscribed to %s (QoS 1)\n", TOPIC_DEVICE_CONTROL);
+
+      // Đồng bộ ngay trạng thái thực tế lên server sau khi kết nối/kết nối lại
+      publishDeviceStatus(1, "led1", digitalRead(LED1_PIN) == HIGH);
+      publishDeviceStatus(2, "led2", digitalRead(LED2_PIN) == HIGH);
     } else {
       Serial.printf("[MQTT] Failed (rc=%d). Retry in 3s...\n", mqttClient.state());
       delay(3000);
@@ -205,7 +219,7 @@ float readLightLux() {
   // Tuy nhiên thực tế mạch chia áp có thể là:
   //   VCC → R_cố_định → GPIO → LDR → GND   (ADC tăng khi sáng: KHÔNG đảo)
   //   VCC → LDR → GPIO → R_cố_định → GND   (ADC giảm khi sáng: CẦN đảo)
-  // Vì bạn nói "càng tối thì lux càng cao" → mạch đang là loại 2 → ĐẢNG công thức:
+  // Mạch chia áp đảo:
   float lux = (float)(ADC_MAX - raw) / ADC_MAX * 1000.0f;
   if (lux < 0)    lux = 0;
   if (lux > 1000) lux = 1000;
@@ -244,7 +258,8 @@ void onMqttMessage(char* topic, byte* payload, unsigned int length) {
     if (deviceId == 1) {
       led1State = turnOn;
       digitalWrite(LED1_PIN, turnOn ? HIGH : LOW);
-      Serial.printf("[LED1] Set to %s\n", turnOn ? "ON" : "OFF");
+      preferences.putBool("led1", turnOn); // Lưu trạng thái vào Flash NVS
+      Serial.printf("[LED1] Set to %s (saved to flash)\n", turnOn ? "ON" : "OFF");
 
       // Thêm delay nhỏ mô phỏng độ trễ thực tế
       delay(50);
@@ -256,7 +271,8 @@ void onMqttMessage(char* topic, byte* payload, unsigned int length) {
     } else if (deviceId == 2) {
       led2State = turnOn;
       digitalWrite(LED2_PIN, turnOn ? HIGH : LOW);
-      Serial.printf("[LED2] Set to %s\n", turnOn ? "ON" : "OFF");
+      preferences.putBool("led2", turnOn); // Lưu trạng thái vào Flash NVS
+      Serial.printf("[LED2] Set to %s (saved to flash)\n", turnOn ? "ON" : "OFF");
 
       delay(50);
 

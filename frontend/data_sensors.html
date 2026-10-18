@@ -5,7 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Data sensor | IoT PTIT</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/list.css" />
+  <script src="js/auth.js"></script>
 </head>
 
 <body>
@@ -21,6 +23,7 @@
         <a href="history.html">History</a>
         <a href="profile.html">Profile</a>
       </nav>
+      <div class="sidebar-auth" id="sidebar-auth"></div>
     </aside>
     <main class="main">
       <div class="mobile-bar">
@@ -34,7 +37,6 @@
         <div class="select-wrap select-wrap-sm">
           <select id="filter-search-type">
             <option value="all">Tất cả</option>
-            <!-- <option value="iden">ID</option> -->
             <option value="light">Ánh sáng</option>
             <option value="temperature">Nhiệt độ</option>
             <option value="humidity">Độ ẩm</option>

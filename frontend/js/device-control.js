@@ -50,11 +50,11 @@ async function controlDevice(deviceId, action, toggleEl, prevChecked, onComplete
           clearExistingPoller(deviceId);
 
           let finalIsOn = prevChecked;
-          if (status === 'ON' || status === 'OFF') {
+          if (status === 'SUCCESS' || status === 'ON' || status === 'OFF') {
             // Thành công: cập nhật toggle theo trạng thái thực tế
-            finalIsOn = (status === 'ON');
+            finalIsOn = (status === 'ON' || (status === 'SUCCESS' && action === 'ON'));
             toggleEl.checked = finalIsOn;
-            showDeviceNotification(deviceId, status, false);
+            showDeviceNotification(deviceId, action, false);
           } else if (status === 'FAILED') {
             // Thất bại: rollback toggle
             finalIsOn = prevChecked;
@@ -136,7 +136,7 @@ function showDeviceNotification(deviceId, status, isError) {
     el.textContent = 'Không phản hồi, thử lại!';
     el.className = 'device-msg device-msg-error';
   } else {
-    el.textContent = `Đã ${status === 'ON' ? 'bật' : 'tắt'}`;
+    el.textContent = `Đã ${status === 'ON' ? 'bật' : (status === 'OFF' ? 'tắt' : 'thành công')}`;
     el.className = 'device-msg device-msg-ok';
   }
   el.style.display = 'inline';

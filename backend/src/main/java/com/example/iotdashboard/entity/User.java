@@ -14,6 +14,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 50, nullable = false, unique = true)
+    private String username;
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @Column(length = 255, nullable = false)
+    private String password;
+
     @Column(name = "student_code", length = 20)
     private String studentCode;
 

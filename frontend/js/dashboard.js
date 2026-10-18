@@ -160,16 +160,16 @@ function createChart(canvas, data) {
       maintainAspectRatio: false,
       animation: false,       // tắt animation khi data thay đổi liên tục
       interaction: {
-        mode: 'nearest',       
-        axis: 'xy',            
-        intersect: true        
+        mode: 'nearest',
+        axis: 'xy',
+        intersect: true
       },
       plugins: {
         legend: { display: false },
         tooltip: {
-          mode: 'nearest',     
+          mode: 'nearest',
           intersect: true,
-          position: 'nearest', 
+          position: 'nearest',
           caretPadding: 6,
           caretSize: 6,
           callbacks: {

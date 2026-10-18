@@ -5,7 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>History | IoT PTIT</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/list.css" />
+  <script src="js/auth.js"></script>
 </head>
 
 <body>
@@ -21,6 +23,7 @@
         <a class="is-active" href="history.html">History</a>
         <a href="profile.html">Profile</a>
       </nav>
+      <div class="sidebar-auth" id="sidebar-auth"></div>
     </aside>
     <main class="main">
       <div class="mobile-bar">
@@ -56,8 +59,7 @@
         <div class="select-wrap select-wrap-sm" title="Lọc theo trạng thái">
           <select id="hist-filter-status">
             <option value="">Trạng thái</option>
-            <option value="ON">ON</option>
-            <option value="OFF">OFF</option>
+            <option value="SUCCESS">SUCCESS</option>
             <option value="WAITING">WAITING</option>
             <option value="FAILED">FAILED</option>
           </select>
