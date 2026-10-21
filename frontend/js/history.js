@@ -5,17 +5,17 @@
 
 // ─── TRẠNG THÁI ──────────────────────────────────────────────────────────────
 let currentPage = 1;
-let PAGE_SIZE   = 10;
+let PAGE_SIZE = 10;
 let currentFilters = {
   deviceName: '',
-  time:       '',
-  action:     '',
-  status:     '',
-  sort:       'desc',
+  time: '',
+  action: '',
+  status: '',
+  sort: 'desc',
 };
 
 let inputDebounce = null;
-let isUserTyping  = false;
+let isUserTyping = false;
 
 // ─── KHỞI TẠO ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -34,17 +34,17 @@ function scheduleAutoRefresh() {
 
 // ─── GẮN SỰ KIỆN ─────────────────────────────────────────────────────────────
 function bindFilterEvents() {
-  const timeInput      = document.getElementById('hist-filter-input');
-  const deviceSelect   = document.getElementById('hist-filter-device');
-  const actionSelect   = document.getElementById('hist-filter-action');
-  const statusSelect   = document.getElementById('hist-filter-status');
-  const sortToggle     = document.getElementById('sort-toggle');
+  const timeInput = document.getElementById('hist-filter-input');
+  const deviceSelect = document.getElementById('hist-filter-device');
+  const actionSelect = document.getElementById('hist-filter-action');
+  const statusSelect = document.getElementById('hist-filter-status');
+  const sortToggle = document.getElementById('sort-toggle');
   const pageSizeSelect = document.getElementById('page-size-select');
 
   // --- Ô tìm kiếm thời gian (debounce)
   if (timeInput) {
     timeInput.addEventListener('focus', () => { isUserTyping = true; });
-    timeInput.addEventListener('blur',  () => { isUserTyping = false; });
+    timeInput.addEventListener('blur', () => { isUserTyping = false; });
     timeInput.addEventListener('input', () => {
       clearTimeout(inputDebounce);
       inputDebounce = setTimeout(() => {
@@ -104,9 +104,9 @@ async function loadPage(page) {
     sort: currentFilters.sort,
   };
   if (currentFilters.deviceName) params.deviceName = currentFilters.deviceName;
-  if (currentFilters.action)     params.action     = currentFilters.action;
-  if (currentFilters.status)     params.status     = currentFilters.status;
-  if (currentFilters.time)       params.time       = convertTimeInput(currentFilters.time);
+  if (currentFilters.action) params.action = currentFilters.action;
+  if (currentFilters.status) params.status = currentFilters.status;
+  if (currentFilters.time) params.time = convertTimeInput(currentFilters.time);
 
   try {
     const data = await fetchDeviceHistory(params);
@@ -136,7 +136,7 @@ function renderTable(items) {
       <td>${item.action}</td>
       <td>${item.status}</td>
       <td>${item.username ?? '—'}</td>
-      <td>${formatDateTime(item.time)}</td>
+      <td>${formatDateTime(item.time)}<button class="btn-copy" onclick="copyTime('${formatDateTime(item.time)}', this)" title="Copy">⧉</button></td>
     </tr>
   `).join('');
 }
@@ -147,7 +147,7 @@ function renderEntriesInfo(currentPageNum, totalPages, pageItemCount, totalItems
   if (!el) return;
   if (!totalItems) { el.textContent = ''; return; }
   const from = (currentPageNum - 1) * PAGE_SIZE + 1;
-  const to   = from + pageItemCount - 1;
+  const to = from + pageItemCount - 1;
   el.textContent = `Hiển thị ${from} đến ${to} trong ${totalItems} mục`;
 }
 
@@ -191,4 +191,11 @@ function getPageNumbers(current, total) {
   else if (current >= total - 2) pages.push(1, '...', total - 2, total - 1, total);
   else pages.push(1, '...', current - 1, current, current + 1, '...', total);
   return pages;
+}
+
+function copyTime(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓';
+    setTimeout(() => btn.textContent = '⧉', 1000);
+  });
 }

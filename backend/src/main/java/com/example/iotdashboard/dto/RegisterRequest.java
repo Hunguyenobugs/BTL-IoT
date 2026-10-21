@@ -13,6 +13,7 @@ public class RegisterRequest {
     private String name;
     private String studentCode;
     private String classField;
+    private String avatarUrl;     
     private String linkFigma;
     private String linkPostman;
     private String linkGithub;

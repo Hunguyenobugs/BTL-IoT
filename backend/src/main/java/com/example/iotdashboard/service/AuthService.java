@@ -40,7 +40,6 @@ public class AuthService {
 
         String token = jwtTokenProvider.generateToken(user.getUsername());
         log.info("User {} logged in successfully", user.getUsername());
-
         return AuthResponse.builder()
                 .token(token)
                 .id(user.getId())
@@ -48,6 +47,7 @@ public class AuthService {
                 .name(user.getName())
                 .studentCode(user.getStudentCode())
                 .classField(user.getClassField())
+                .avatarUrl(user.getAvatarUrl())
                 .build();
     }
 
@@ -78,6 +78,7 @@ public class AuthService {
         user.setName(req.getName().trim());
         user.setStudentCode(req.getStudentCode().trim());
         user.setClassField(req.getClassField() != null ? req.getClassField().trim() : null);
+        user.setAvatarUrl(req.getAvatarUrl() != null ? req.getAvatarUrl().trim() : null);
         user.setLinkFigma(req.getLinkFigma() != null ? req.getLinkFigma().trim() : null);
         user.setLinkPostman(req.getLinkPostman() != null ? req.getLinkPostman().trim() : null);
         user.setLinkGithub(req.getLinkGithub() != null ? req.getLinkGithub().trim() : null);
@@ -94,6 +95,7 @@ public class AuthService {
                 .name(savedUser.getName())
                 .studentCode(savedUser.getStudentCode())
                 .classField(savedUser.getClassField())
+                .avatarUrl(savedUser.getAvatarUrl())
                 .build();
     }
 

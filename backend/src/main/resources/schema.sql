@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     password      VARCHAR(255) NOT NULL,
     student_code  VARCHAR(20)  NOT NULL,
     name          VARCHAR(100) NOT NULL,
+    avatar_url        VARCHAR(500),
     `class`       VARCHAR(50),
     link_figma    VARCHAR(255),
     link_postman  VARCHAR(255),

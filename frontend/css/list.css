@@ -45,6 +45,7 @@
     font-size: 16px;
     color: var(--color-text);
     width: 100%;
+    text-align: center;
 }
 
 .field::placeholder {
@@ -302,4 +303,18 @@
         flex: 1 1 100%;
         order: -1;
     }
+}
+
+.btn-copy {
+    margin-left: 6px;
+    padding: 0 4px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.btn-copy:hover {
+    color: var(--color-brand);
 }

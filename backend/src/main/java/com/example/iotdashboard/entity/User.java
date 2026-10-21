@@ -28,7 +28,11 @@ public class User {
     private String name;
 
     @Column(name = "`class`", length = 50)
-    private String classField; // "class" is reserved in Java & MySQL, cần escape backtick
+    private String classField;
+
+    /** URL hoặc base64 avatar của user */
+    @Column(name = "avatar_url", length = 500)
+    private String avatarUrl;
 
     @Column(name = "link_figma", length = 255)
     private String linkFigma;

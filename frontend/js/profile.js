@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function renderProfile(user) {
+  const avatarImg = document.getElementById('profile-avatar');
+  if (avatarImg) {
+    avatarImg.src = user.avatarUrl || 'assets/avatar.png';
+    avatarImg.alt = user.name || 'Avatar';
+  }
   // Tên
   const nameEl = document.getElementById('profile-name');
   if (nameEl) nameEl.textContent = user.name || '—';
@@ -26,14 +31,10 @@ function renderProfile(user) {
   if (classEl) classEl.textContent = user.classField || '—';
 
   // Links
-  setLink('profile-link-github',  user.linkGithub,  'Xem tại đây');
-  setLink('profile-link-figma',   user.linkFigma,   'Xem tại đây');
+  setLink('profile-link-github', user.linkGithub, 'Xem tại đây');
+  setLink('profile-link-figma', user.linkFigma, 'Xem tại đây');
   setLink('profile-link-postman', user.linkPostman, 'Xem tại đây');
-  setLink('profile-link-report',  user.linkReport,  'Xem tại đây');
-
-  // Avatar alt text
-  const avatarImg = document.querySelector('.avatar img');
-  if (avatarImg && user.name) avatarImg.alt = user.name;
+  setLink('profile-link-report', user.linkReport, 'Xem tại đây');
 }
 
 function setLink(id, href, text) {

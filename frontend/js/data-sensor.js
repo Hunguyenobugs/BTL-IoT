@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   bindFilterEvents();
   loadPage(1);
-  scheduleAutoRefresh();
+  // scheduleAutoRefresh();
 });
 
 // ─── AUTO-REFRESH (setTimeout-chain) ─────────────────────────────────────────
@@ -202,7 +202,7 @@ function renderTable(items) {
       <td>${item.id}</td>
       <td>${item.sensorType}</td>
       <td>${item.value}</td>
-      <td>${formatDateTime(item.time)}</td>
+      <td>${formatDateTime(item.time)}<button class="btn-copy" onclick="copyTime('${formatDateTime(item.time)}', this)" title="Copy">⧉</button></td>
     `;
     fragment.appendChild(tr);
   });
@@ -270,4 +270,11 @@ function getPageNumbers(current, total) {
     pages.push(1, '...', current - 1, current, current + 1, '...', total);
   }
   return pages;
+}
+
+function copyTime(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓';
+    setTimeout(() => btn.textContent = '⧉', 1000);
+  });
 }

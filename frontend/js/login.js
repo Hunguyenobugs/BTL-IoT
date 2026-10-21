@@ -97,6 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = document.getElementById('reg-name').value.trim();
     const studentCode = document.getElementById('reg-student-code').value.trim();
     const classField = document.getElementById('reg-class').value.trim();
+    const avatarUrl = document.getElementById('reg-avatar').value.trim();
+    const linkGithub = document.getElementById('reg-github').value.trim();
+    const linkFigma = document.getElementById('reg-figma').value.trim();
+    const linkPostman = document.getElementById('reg-postman').value.trim();
+    const linkReport = document.getElementById('reg-report').value.trim();
+
     const btn = document.getElementById('btn-submit-register');
 
     if (password.length < 6) {
@@ -104,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
       regError.style.display = 'block';
       return;
     }
-
     if (password !== confirmPassword) {
       regError.textContent = 'Mật khẩu xác nhận không khớp';
       regError.style.display = 'block';
@@ -120,7 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
         password,
         name,
         studentCode,
-        classField: classField || null
+        classField: classField || null,
+        // ===== gửi 5 trường mới =====
+        avatarUrl: avatarUrl || null,
+        linkGithub: linkGithub || null,
+        linkFigma: linkFigma || null,
+        linkPostman: linkPostman || null,
+        linkReport: linkReport || null,
       });
 
       localStorage.setItem('token', data.token);
@@ -129,10 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
         username: data.username,
         name: data.name,
         studentCode: data.studentCode,
-        classField: data.classField
+        classField: data.classField,
+        avatarUrl: data.avatarUrl,   // ← thêm để sidebar dùng
       }));
 
-      // Đăng ký thành công -> chuyển về dashboard
       window.location.replace('dashboard.html');
     } catch (err) {
       regError.textContent = err.message || 'Đăng ký thất bại';
